@@ -1,7 +1,10 @@
 import React, { useState } from "react";
 import styled from "styled-components";
 
-import "./App.css";
+import "./style.css";
+import fibonacciArray from "./fibonacciArray";
+
+const fibScale = baseUnit => fibonacciArray.map(x => x * baseUnit);
 
 const range = (n, times = 1, scale = 1) =>
   Array(n)
@@ -67,25 +70,26 @@ function Container({ margin, width, children }) {
   );
 }
 
-function App() {
+function FibonacciGrid() {
   const [baseUnit, setBaseUnit] = useState(8);
   const [spacingsLength] = useState(24 * 4);
-  const [containerUnit, setContainerUnit] = useState(0);
-  const [containerMargin, setMargin] = useState(0);
+  const [containerUnit, setContainerUnit] = useState(6);
+  const [containerMargin, setMargin] = useState(2);
 
-  // const spacings = fibScale(baseUnit, 1);
-  const spacings = range(spacingsLength, baseUnit, 1);
+  const spacings = fibScale(baseUnit, 1);
+  // const spacings = range(spacingsLength, baseUnit, 1);
 
   const roundSpacing = spacings
-    .map((_, i) => baseUnit * spacings[i + containerUnit])
-    .filter(isGood)
+    .map((_, i) => spacings[i + containerUnit])
+    // .filter(isGood)
     .slice(0, 6)
+    // .filter(x => x > 280 && x < 3000)
     .reverse();
 
   const margin = spacings[containerMargin];
 
   return (
-    <div className="App">
+    <div className="FibonacciGrid">
       <div style={{ overflowX: "auto" }}>
         <table>
           <tbody>
@@ -107,19 +111,9 @@ function App() {
                 </td>
               ))}
             </tr>
-            <tr>
-              {spacings.map((space, i) => (
-                <td>
-                  <Pill width={space * baseUnit} title={i}>
-                    {space * baseUnit}
-                  </Pill>
-                </td>
-              ))}
-            </tr>
           </tbody>
         </table>
       </div>
-
       <p>
         Base unit:{" "}
         <input
@@ -127,24 +121,22 @@ function App() {
           type="range"
           min="0"
           max="50"
-          step="2"
+          // step="2"
           value={baseUnit}
         />
         {baseUnit}
       </p>
-
       <p>
         Container width:{" "}
         <input
           onChange={e => setContainerUnit(Number(e.target.value))}
           type="range"
-          min="0"
+          min="-5"
           max={spacingsLength}
           value={containerUnit}
         />
         {containerUnit}
       </p>
-
       <p>
         Margin {containerMargin}
         <input
@@ -157,6 +149,36 @@ function App() {
         {margin}
       </p>
 
+      {roundSpacing.map((w, i) => (
+        <>
+          <Container margin={0} width={w + margin * 2} />
+          <Container margin={0} width={w} />
+
+          <Container margin={margin} width={w}>
+            {range(4).map(() => (
+              <Column margin={margin} width={per(1 / 4)}>
+                1 / {4}
+              </Column>
+            ))}
+          </Container>
+          <Container margin={margin} width={w}>
+            {range(3).map(() => (
+              <Column margin={margin} width={per(1 / 3)}>
+                1 / {3}
+              </Column>
+            ))}
+          </Container>
+          <Container margin={margin} width={w}>
+            {range(2).map(() => (
+              <Column margin={margin} width={per(1 / 2)}>
+                1 / {2}
+              </Column>
+            ))}
+          </Container>
+        </>
+      ))}
+
+      {/*
       {roundSpacing.map(i => (
         <>
           <Container margin={margin} width={i + margin * 4} />
@@ -187,9 +209,9 @@ function App() {
             ))}
           </Container>
         </>
-      ))}
+      ))} */}
     </div>
   );
 }
 
-export default App;
+export default FibonacciGrid;

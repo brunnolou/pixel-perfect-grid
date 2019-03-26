@@ -2,49 +2,14 @@ import React, { useState } from "react";
 import styled from "styled-components";
 
 import "./style.css";
-import fibonacciArray from "./fibonacciArray";
+import fibonacciArray from "../fibonacciArray";
+import { range } from "../utils";
+import Pill from "../Pill";
+import UnitPill from "../UnitPill";
+import Flex, { Box } from "../utils/Flex";
 
 const fibScale = baseUnit => fibonacciArray.map(x => x * baseUnit);
-
-const range = (n, times = 1, scale = 1) =>
-  Array(n)
-    .fill()
-    .map((_, i) => Math.round((i + 1) * times * scale ** i));
-
 const per = x => x * 100 + "%";
-const isGood = x => x % 2 === 0 && x % 3 === 0 && x % 4 === 0;
-
-function Pill({ width, children, ...props }) {
-  return (
-    <span
-      {...props}
-      style={{
-        border: "1px solid #eee",
-        padding: 4,
-        opacity: isGood(width) ? 1 : 0.2
-      }}
-    >
-      {children}
-    </span>
-  );
-}
-
-function Column({ margin, baseUnit, spacings, width, children }) {
-  return (
-    <div
-      style={{
-        width: width,
-        padding: `8px 0`,
-        marginRight: margin,
-        background: "rgba(255, 255, 0, 0.5)"
-        // borderLeft: "1px solid #eee",
-        // borderRight: "1px solid #eee"
-      }}
-    >
-      {children ? children : width}
-    </div>
-  );
-}
 
 const ContainerStyled = styled.div`
   display: flex;
@@ -56,37 +21,23 @@ const ContainerStyled = styled.div`
   }
 `;
 
-function Container({ margin, width, children }) {
-  return (
-    <ContainerStyled
-      style={{
-        margin: margin + "px auto",
-        width: "100%",
-        maxWidth: width
-      }}
-    >
-      {children ? children : width}
-    </ContainerStyled>
-  );
-}
+const H1 = styled.div`
+	background: aliceblue;
+	max-width: 1920px;
+	margin: 0 auto;
+`
 
 function FibonacciGrid() {
-  const [baseUnit, setBaseUnit] = useState(8);
+  const [baseUnit, setBaseUnit] = useState(140);
   const [spacingsLength] = useState(24 * 4);
-  const [containerUnit, setContainerUnit] = useState(6);
-  const [containerMargin, setMargin] = useState(2);
+  const [containerUnit, setContainerUnit] = useState(0);
+  const [containerMargin, setMargin] = useState(0.25);
 
   const spacings = fibScale(baseUnit, 1);
-  // const spacings = range(spacingsLength, baseUnit, 1);
 
-  const roundSpacing = spacings
-    .map((_, i) => spacings[i + containerUnit])
-    // .filter(isGood)
-    .slice(0, 6)
-    // .filter(x => x > 280 && x < 3000)
-    .reverse();
+  const spacingsPlusWidth = spacings.map((_, i) => spacings[i + containerUnit]);
 
-  const margin = spacings[containerMargin];
+  // const margin = spacings[containerMargin];
 
   return (
     <div className="FibonacciGrid">
@@ -117,99 +68,115 @@ function FibonacciGrid() {
       <p>
         Base unit:{" "}
         <input
-          onChange={e => setBaseUnit(Number(e.target.value))}
+          onChange={e => setBaseUnit(parseFloat(e.target.value, 10))}
           type="range"
           min="0"
-          max="50"
+          max="300"
           // step="2"
           value={baseUnit}
         />
         {baseUnit}
       </p>
-      <p>
+      {/* <p>
         Container width:{" "}
         <input
-          onChange={e => setContainerUnit(Number(e.target.value))}
+          onChange={e => setContainerUnit(parseFloat(e.target.value,10))}
           type="range"
           min="-5"
           max={spacingsLength}
           value={containerUnit}
         />
         {containerUnit}
-      </p>
+      </p> */}
       <p>
-        Margin {containerMargin}
+        Margin
         <input
-          onChange={e => setMargin(Number(e.target.value))}
+          onChange={e => setMargin(parseFloat(e.target.value, 10))}
           type="range"
           min="0"
-          max={spacingsLength}
+          step={1 / 32}
+          max={1}
           value={containerMargin}
         />
-        {margin}
+        {containerMargin}
       </p>
 
-      {roundSpacing.map((w, i) => (
-        <>
-          <Container margin={0} width={w + margin * 2} />
-          <Container margin={0} width={w} />
+      <h1>Containers</h1>
 
-          <Container margin={margin} width={w}>
-            {range(4).map(() => (
-              <Column margin={margin} width={per(1 / 4)}>
-                1 / {4}
-              </Column>
-            ))}
-          </Container>
-          <Container margin={margin} width={w}>
-            {range(3).map(() => (
-              <Column margin={margin} width={per(1 / 3)}>
-                1 / {3}
-              </Column>
-            ))}
-          </Container>
-          <Container margin={margin} width={w}>
-            {range(2).map(() => (
-              <Column margin={margin} width={per(1 / 2)}>
-                1 / {2}
-              </Column>
-            ))}
-          </Container>
-        </>
-      ))}
+      <Flex width={1} mx="auto" justifyContent="center">
+        <UnitPill w={6} {...{ spacingsPlusWidth, margin: containerMargin }} />
+      </Flex>
 
-      {/*
-      {roundSpacing.map(i => (
-        <>
-          <Container margin={margin} width={i + margin * 4} />
-          <Container margin={margin} width={i + margin * 2} />
-          <Container margin={margin} width={i} />
+      <Flex width={1} mx="auto" justifyContent="center">
+        <UnitPill w={5} {...{ spacingsPlusWidth, margin: containerMargin }} />
+      </Flex>
 
-          <Container margin={margin} width={i}>
-            {[4, 4, 4, 4].map(x => (
-              <Column margin={margin} width={per(1 / x)}>
-                1 / {x}
-              </Column>
-            ))}
-          </Container>
+      <Flex width={1} mx="auto" justifyContent="center">
+        <UnitPill w={4} {...{ spacingsPlusWidth, margin: containerMargin }} />
+      </Flex>
 
-          <Container margin={margin} width={i}>
-            {[3, 3, 3].map(x => (
-              <Column margin={margin} width={per(1 / x)}>
-                1 / {x}
-              </Column>
-            ))}
-          </Container>
+      <br />
+      <br />
+      <br />
 
-          <Container margin={margin} width={i}>
-            {[2, 2].map(x => (
-              <Column margin={margin} width={per(1 / x)}>
-                1 / {x}
-              </Column>
-            ))}
-          </Container>
-        </>
-      ))} */}
+      <h1>Equal divisions</h1>
+
+      <Flex width={1} mx="auto" justifyContent="center">
+        <UnitPill w={4} {...{ spacingsPlusWidth, margin: containerMargin }} />
+        <UnitPill w={4} {...{ spacingsPlusWidth, margin: containerMargin }} />
+      </Flex>
+
+      <Flex width={1} mx="auto" justifyContent="center">
+        <UnitPill w={3} {...{ spacingsPlusWidth, margin: containerMargin }} />
+        <UnitPill w={3} {...{ spacingsPlusWidth, margin: containerMargin }} />
+        <UnitPill w={3} {...{ spacingsPlusWidth, margin: containerMargin }} />
+      </Flex>
+
+      <Flex width={1} mx="auto" justifyContent="center">
+        <UnitPill w={2} {...{ spacingsPlusWidth, margin: containerMargin }} />
+        <UnitPill w={2} {...{ spacingsPlusWidth, margin: containerMargin }} />
+        <UnitPill w={2} {...{ spacingsPlusWidth, margin: containerMargin }} />
+        <UnitPill w={2} {...{ spacingsPlusWidth, margin: containerMargin }} />
+      </Flex>
+
+      <Flex width={1} mx="auto" justifyContent="center">
+        <UnitPill w={1} {...{ spacingsPlusWidth, margin: containerMargin }} />
+        <UnitPill w={1} {...{ spacingsPlusWidth, margin: containerMargin }} />
+        <UnitPill w={1} {...{ spacingsPlusWidth, margin: containerMargin }} />
+        <UnitPill w={1} {...{ spacingsPlusWidth, margin: containerMargin }} />
+        <UnitPill w={1} {...{ spacingsPlusWidth, margin: containerMargin }} />
+        <UnitPill w={1} {...{ spacingsPlusWidth, margin: containerMargin }} />
+      </Flex>
+
+      <br />
+      <br />
+      <br />
+
+      <H1>Layouts</H1>
+
+      <h2>2</h2>
+      <Flex width={1} mx="auto" justifyContent="center">
+        <UnitPill w={4} {...{ spacingsPlusWidth, margin: containerMargin }} />
+        <UnitPill w={2} {...{ spacingsPlusWidth, margin: containerMargin }} />
+      </Flex>
+
+      <Flex width={1} mx="auto" justifyContent="center">
+        <UnitPill w={2} {...{ spacingsPlusWidth, margin: containerMargin }} />
+        <UnitPill w={4} {...{ spacingsPlusWidth, margin: containerMargin }} />
+      </Flex>
+
+      <h2>3</h2>
+      <Flex width={1} mx="auto" justifyContent="center">
+        <UnitPill w={1} {...{ spacingsPlusWidth, margin: containerMargin }} />
+        <UnitPill w={3} {...{ spacingsPlusWidth, margin: containerMargin }} />
+        <UnitPill w={2} {...{ spacingsPlusWidth, margin: containerMargin }} />
+      </Flex>
+
+      <Flex width={1} mx="auto" justifyContent="center">
+        <UnitPill w={2} {...{ spacingsPlusWidth, margin: containerMargin }} />
+        <UnitPill w={3} {...{ spacingsPlusWidth, margin: containerMargin }} />
+        <UnitPill w={1} {...{ spacingsPlusWidth, margin: containerMargin }} />
+      </Flex>
     </div>
   );
 }

@@ -1,4 +1,4 @@
-# #nogrid Layouts
+## The perfect grid layout tool
 
 ### The concept
 Don't design using an "X" number of columns grid. (Like the traditional bootstrap grid)

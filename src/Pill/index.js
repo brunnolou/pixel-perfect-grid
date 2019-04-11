@@ -1,15 +1,13 @@
 import React from "react";
-export default function Pill({ width, children, ...props }) {
-  return (
-    <span
-      {...props}
-      style={{
-        border: "1px solid #eee",
-        padding: 4,
-        // opacity: isGood(width) ? 1 : 0.2
-      }}
-    >
-      {children}
-    </span>
-  );
-}
+import styled from "styled-components";
+
+
+const Pill = styled.div`
+	border: 1px solid #eee;
+	padding: 3px 6px;
+	border-radius: 3px;
+	font-size: 12px;
+	font-family: monospace;
+`;
+
+export default Pill;

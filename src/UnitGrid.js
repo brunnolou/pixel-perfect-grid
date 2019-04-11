@@ -28,7 +28,7 @@ function Container({ margin, width, children }) {
   return (
     <ContainerStyled
       style={{
-        margin: margin + "px auto",
+        margin: 0 + "px auto",
         width: "100%",
         maxWidth: width
       }}

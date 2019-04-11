@@ -1,73 +1,25 @@
 import React, { useState } from "react";
-import styled from "styled-components";
 
 import "./App.css";
 import Column from "./Column";
-import Pill from "./Pill";
 import ColumnData from "./ColumnData/ColumnData";
 import Grid from "./Grid/Grid";
-import fibonacciArray from "./fibonacciArray";
 import Square from "./Square/Square";
+import Pill from "./Pill";
 import BadNumber from "./BadNumber/BadNumber";
-
-const per = x => x * 100 + "%";
-const range = (n, times = 1, scale = 1) =>
-  Array(n)
-    .fill()
-    .map((_, i) => Math.round(i * times * scale ** i));
-
-const isGood = x => x % 2 === 0 && x % 3 === 0 && x % 4 === 0;
-const fibScale = baseUnit => fibonacciArray.map(x => x * baseUnit);
-
-const Flex = styled.div`
-  display: flex;
-  justify-content: center;
-`;
-
-const ContainerStyled = styled.div`
-  background: rgba(100, 100, 100, 0.1);
-`;
-
-function Container({ margin, width, children }) {
-  return (
-    <ContainerStyled
-      style={{
-        position: "relative",
-        margin: margin + "px auto",
-        width: "100%",
-        maxWidth: width
-      }}
-    >
-      <Flex
-        style={{
-          marginLeft: margin * -1,
-          marginRight: margin * -1
-        }}
-      >
-        {children ? (
-          children
-        ) : (
-          <small
-            style={{
-              opacity: isGood(width) ? 1 : Number.isInteger(width) ? 0.5 : 0.2
-            }}
-          >
-            {width}
-          </small>
-        )}
-      </Flex>
-    </ContainerStyled>
-  );
-}
+import { fibScale, range, isGood, per } from "./utils";
+import Container from "./Container/Container";
+import IsGood from "./BadNumber/IsGood";
 
 function App() {
   const [baseUnit, setBaseUnit] = useState(6);
   const spacingsLength = 32 * 8;
-  const [containerUnit, setContainerUnit] = useState(37);
+  const [containerUnit, setContainerUnit] = useState(39);
   const [containerMargin, setMargin] = useState(3);
 
-  const fibSpacings = fibScale(baseUnit, 1);
+  // const fibSpacings = fibScale(baseUnit, 1);
   const spacings = range(spacingsLength, baseUnit, 1);
+
   const expo = range(spacingsLength, 1, 1.09);
 
   const roundSpacing = spacings
@@ -81,136 +33,106 @@ function App() {
 
   return (
     <div className="App">
-      {/* <div style={{ overflowX: "auto" }}>
-        <table>
-          <tbody>
-            <tr>
-              <th>Index</th>
-              {spacings.map((space, i) => (
-                <td>
-                  <small width={space} title={i}>
-                    {i}
-                  </small>
-                </td>
-              ))}
-            </tr>
-            <tr>
-              <th>Space</th>
-              {spacings.map((space, i) => (
-                <td>
-                  <Pill width={space} title={i}>
-                    {space}
-                  </Pill>
-                </td>
-              ))}
-            </tr>
-            <tr>
-              <th>&times;BaseUnit</th>
+      <table className="table">
+        <tbody>
+          <tr>
+            <th>Base unit: </th>
+            <td>
+              <input
+                onChange={e => setBaseUnit(Number(e.target.value))}
+                type="number"
+                min="0"
+                max="50"
+                step="2"
+                value={baseUnit}
+              />
+            </td>
+          </tr>
 
-              {spacings.map((space, i) => (
-                <td>
-                  <Pill width={space * baseUnit} title={i}>
-                    {space * baseUnit}
-                  </Pill>
-                </td>
-              ))}
-            </tr>
-            <tr>
-              <th>Major</th>
+          <tr>
+            <th>Container: </th>
+            <td>
+              <IsGood number={containerUnit * baseUnit * baseUnit}>
+                <input
+                  onChange={e => setContainerUnit(Number(e.target.value))}
+                  type="number"
+                  min="0"
+                  max={spacingsLength}
+                  value={containerUnit}
+                />
+              </IsGood>
+            </td>
+            {/* <td>
+              {!isGood(containerUnit * baseUnit * baseUnit) ? (
+                <del>{containerUnit * baseUnit * baseUnit + gutter}</del>
+              ) : (
+                containerUnit * baseUnit * baseUnit + gutter
+              )}
+            </td> */}
+          </tr>
 
-              {expo.map((space, i) => (
-                <td>
-                  <Pill width={spacings[space]} title={i}>
-                    {spacings[space]}
-                  </Pill>
-                </td>
-              ))}
-            </tr>
-            <tr>
-              <th>Fibonacci</th>
-              {fibSpacings.map((space, i) => (
-                <td>
-                  <Pill width={space} title={i}>
-                    {space}
-                  </Pill>
-                </td>
-              ))}
-            </tr>
-          </tbody>
-        </table>
-      </div> */}
+          <tr>
+            <th>Gutter</th>
+            <td>
+              <input
+                onChange={e => setMargin(Number(e.target.value))}
+                type="number"
+                min="0"
+                max={spacingsLength}
+                value={containerMargin}
+              />
+            </td>
+            <td>
+              <Pill>{gutter}px</Pill>
+            </td>
+          </tr>
+        </tbody>
+      </table>
 
-      <p>
-        <b>Base unit: </b>
-        <input
-          onChange={e => setBaseUnit(Number(e.target.value))}
-          type="range"
-          min="0"
-          max="50"
-          step="2"
-          value={baseUnit}
-        />
-        {baseUnit}
-      </p>
-
-      <p>
-        <b>Container width: </b>
-        <input
-          onChange={e => setContainerUnit(Number(e.target.value))}
-          type="range"
-          min="0"
-          max={spacingsLength}
-          value={containerUnit}
-        />
-        {containerUnit}
-      </p>
-
-      <p>
-        <b>Margin</b> {containerMargin}
-        <input
-          onChange={e => setMargin(Number(e.target.value))}
-          type="range"
-          min="0"
-          max={spacingsLength}
-          value={containerMargin}
-        />
-        {margin}
-      </p>
-
-      <p>
-        <b>Gutter: </b>
-        {gutter}
-      </p>
-
-      {roundSpacing.map(i => (
-        <Grid size={baseUnit} width={i + gutter * 2} height={"auto"}>
-          <Container margin={margin} width={i + gutter * 2}>
+      {roundSpacing.map(w => (
+        <Grid size={baseUnit} width={w + gutter * 2} height={"auto"}>
+          <Container margin={margin} width={w + gutter * 2}>
             <div>
-              <h1>
-                {i + gutter * 2}
+              <p>
+                {w + gutter * 2}
                 <small>px</small>
-              </h1>
+              </p>
               <small>With 2 gutters: {gutter * 2}px</small>
             </div>
           </Container>
-
-          <Container margin={margin} width={i + gutter}>
+          <Container margin={margin} width={w + gutter}>
             <center>
-              <p>
-                {i + gutter} + <small>margin: {gutter}</small>
-              </p>
-              <small>With half gutter: {gutter * 2}px</small>
+              <h1>{w + gutter}</h1>
+              {!!gutter && (
+                <small>
+                  With half gutter on each side: 2 &times; {gutter / 2}px
+                </small>
+              )}
             </center>
           </Container>
 
           <h1>Containers size</h1>
+          <div style={{ marginBottom: 12 }}>
+            <Column margin={0} width={w + gutter * 2}>
+              <BadNumber number={w + gutter * 2} bg={"#4DD4E0"}>
+                {w + gutter * 2}
+              </BadNumber>
+            </Column>
+          </div>
+
+          <Column margin={margin} width={w + gutter}>
+            <BadNumber number={w + gutter} bg={"#4DD4E0"}>
+              {w + gutter}
+            </BadNumber>
+          </Column>
+
           {[[1, 1], [10, 12], [2, 3], [1, 2], [1, 3]].map(([x, div]) => {
-            const columnWidth = (i + gutter) / div - gutter;
+            const columnWidth = (w + gutter) / div - gutter;
             const containerSize = x * columnWidth + (x - 1) * gutter;
             return (
-              <Container margin={margin} width={i}>
+              <Container margin={margin} width={w}>
                 <Column margin={margin} width={containerSize}>
-                  <BadNumber number={containerSize} bg={"yellow"}>
+                  <BadNumber number={containerSize} bg={"#4DD4E0"}>
                     {containerSize}
                   </BadNumber>
                 </Column>
@@ -219,12 +141,12 @@ function App() {
           })}
 
           <h1>Column widths</h1>
-          {i > 1152 && (
-            <Container margin={margin} width={i}>
+          {w > 1152 && (
+            <Container margin={margin} width={w}>
               {[12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12].map(x => (
                 <Column margin={margin} width={per(1 / x)}>
                   <ColumnData
-                    width={i + gutter}
+                    width={w + gutter}
                     division={x}
                     margin={margin}
                     baseUnit={baseUnit}
@@ -234,12 +156,12 @@ function App() {
             </Container>
           )}
 
-          {i > 540 && (
-            <Container margin={margin} width={i}>
+          {w > 540 && (
+            <Container margin={margin} width={w}>
               {[6, 6, 6, 6, 6, 6].map(x => (
                 <Column margin={margin} width={per(1 / x)}>
                   <ColumnData
-                    width={i + gutter}
+                    width={w + gutter}
                     division={x}
                     margin={margin}
                     baseUnit={baseUnit}
@@ -249,12 +171,12 @@ function App() {
             </Container>
           )}
 
-          {i > 360 && (
-            <Container margin={margin} width={i}>
+          {w > 360 && (
+            <Container margin={margin} width={w}>
               {[4, 4, 4, 4].map(x => (
                 <Column margin={margin} width={per(1 / x)}>
                   <ColumnData
-                    width={i + gutter}
+                    width={w + gutter}
                     division={x}
                     margin={margin}
                     baseUnit={baseUnit}
@@ -264,12 +186,12 @@ function App() {
             </Container>
           )}
 
-          {i > 324 && (
-            <Container margin={margin} width={i}>
+          {w > 324 && (
+            <Container margin={margin} width={w}>
               {[3, 3, 3].map(x => (
                 <Column margin={margin} width={per(1 / x)}>
                   <ColumnData
-                    width={i + gutter}
+                    width={w + gutter}
                     division={x}
                     margin={margin}
                     baseUnit={baseUnit}
@@ -279,11 +201,11 @@ function App() {
             </Container>
           )}
 
-          <Container margin={margin} width={i}>
+          <Container margin={margin} width={w}>
             {[2, 2].map(x => (
               <Column margin={margin} width={per(1 / x)}>
                 <ColumnData
-                  width={i + gutter}
+                  width={w + gutter}
                   division={x}
                   margin={margin}
                   baseUnit={baseUnit}
@@ -292,9 +214,97 @@ function App() {
             ))}
           </Container>
 
+          <section>
+            <h1>Layout</h1>
+            <Container margin={margin} width={w}>
+              {[[1, 6], [5, 6]].map(([x, by]) => (
+                <Column margin={0} width={per(x / by)}>
+                  <ColumnData
+                    width={w + gutter}
+                    division={[x, by]}
+                    margin={0}
+                    baseUnit={baseUnit}
+                  />
+                </Column>
+              ))}
+            </Container>
+            <Container margin={margin} width={w}>
+              {[[1, 4], [3, 4]].map(([x, by]) => (
+                <Column margin={0} width={per(x / by)}>
+                  <ColumnData
+                    width={w + gutter}
+                    division={[x, by]}
+                    margin={0}
+                    baseUnit={baseUnit}
+                  />
+                </Column>
+              ))}
+            </Container>
+            <Container margin={margin} width={w}>
+              {[[1, 3], [2, 3]].map(([x, by]) => (
+                <Column margin={0} width={per(x / by)}>
+                  <ColumnData
+                    width={w + gutter}
+                    division={[x, by]}
+                    margin={0}
+                    baseUnit={baseUnit}
+                  />
+                </Column>
+              ))}
+            </Container>
+            <Container margin={margin} width={w}>
+              {[[1, 2], [1, 2]].map(([x, by]) => (
+                <Column margin={0} width={per(x / by)}>
+                  <ColumnData
+                    width={w + gutter}
+                    division={[x, by]}
+                    margin={0}
+                    baseUnit={baseUnit}
+                  />
+                </Column>
+              ))}
+            </Container>
+            <Container margin={margin} width={w}>
+              {[[1, 3], [1, 3], [1, 3]].map(([x, by]) => (
+                <Column margin={0} width={per(x / by)}>
+                  <ColumnData
+                    width={w + gutter}
+                    division={[x, by]}
+                    margin={0}
+                    baseUnit={baseUnit}
+                  />
+                </Column>
+              ))}
+            </Container>
+            <Container margin={margin} width={w}>
+              {[[1, 4], [2, 4], [1, 4]].map(([x, by]) => (
+                <Column margin={0} width={per(x / by)}>
+                  <ColumnData
+                    width={w + gutter}
+                    division={[x, by]}
+                    margin={0}
+                    baseUnit={baseUnit}
+                  />
+                </Column>
+              ))}
+            </Container>
+            <Container margin={margin} width={w}>
+              {[[1, 6], [4, 6], [1, 6]].map(([x, by]) => (
+                <Column margin={0} width={per(x / by)}>
+                  <ColumnData
+                    width={w + gutter}
+                    division={[x, by]}
+                    margin={0}
+                    baseUnit={baseUnit}
+                  />
+                </Column>
+              ))}
+            </Container>
+          </section>
+
           <h1>Spacing</h1>
 
-          <Square size={baseUnit / 2} unit={baseUnit} title={i}>
+          <Square size={baseUnit / 2} unit={baseUnit} title={w}>
             {1} - <small>{baseUnit / 2}px</small>
           </Square>
 

@@ -1,7 +1,12 @@
 import React from "react";
 
-
-export default function Column({ padding = ``, margin, width, children }) {
+export default function Column({
+  padding = ``,
+  margin,
+  width,
+  style,
+  ...props
+}) {
   return (
     <div
       style={{
@@ -9,10 +14,9 @@ export default function Column({ padding = ``, margin, width, children }) {
         padding,
         marginLeft: margin,
         marginRight: margin,
-        // background: "rgba(255, 255, 0, 1)"
+        ...style
       }}
-    >
-      {children}
-    </div>
+      {...props}
+    />
   );
 }

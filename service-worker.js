@@ -14,7 +14,7 @@
 importScripts("https://storage.googleapis.com/workbox-cdn/releases/3.6.3/workbox-sw.js");
 
 importScripts(
-  "/pixel-perfect-grid/precache-manifest.400fa95bc51200c64c26691a0beb8aea.js"
+  "/pixel-perfect-grid/precache-manifest.2a039a3c81028178c3c5a3b01c607f18.js"
 );
 
 workbox.clientsClaim();
